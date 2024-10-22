@@ -1,0 +1,59 @@
+/* Общие стили для иконок */
+.easy-button-button .fa {
+    font-size: 20px; 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+}
+
+/* Стиль для кнопки позитивного слоя */
+.easy-button-button.positive {
+    background-color: green;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    width: 40px; /* Размер кнопки */
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.easy-button-button.positive:hover {
+    background-color: darkgreen;
+}
+
+/* Стиль для кнопки негативного слоя */
+.easy-button-button.negative {
+    background-color: red;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    width: 40px; /* Размер кнопки */
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.easy-button-button.negative:hover {
+    background-color: darkred;
+}
+
+/* Стиль для кнопки сохранения */
+.easy-button-button.save {
+    width: 40px;  /* Размер кнопки */
+    height: 40px;
+    color: white;
+    background-color: blue;
+    border-radius: 5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.easy-button-button.save:hover {
+    background-color: darkblue;
+}

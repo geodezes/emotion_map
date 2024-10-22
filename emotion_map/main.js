@@ -1,4 +1,4 @@
-			var map = new L.Map('map', {
+			var em_map = new L.Map('em_map', {
 			center: new L.LatLng(52.2789771, 104.2887651),
 			zoom: 14,
 			editable: true
@@ -8,12 +8,12 @@
 			var osm = new L.TileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
 				attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
 				});
-			map.addLayer(osm);
+			em_map.addLayer(osm);
 			
 			/* геолокация */
-			L.geolet({ position: 'topright', title:'Где я?' }).addTo(map);
+			L.geolet({ position: 'topright', title:'Где я?' }).addTo(em_map);
 			
-L.drawLocal.draw.toolbar.buttons.marker="Marker New Name"
+//L.drawLocal.draw.toolbar.buttons.marker="Marker New Name"
 
 			//позитив
 			const em_pozitivPointOptions = {
@@ -25,7 +25,7 @@ L.drawLocal.draw.toolbar.buttons.marker="Marker New Name"
 			  typeName: 'em_pozitiv',
 			  maxFeatures: 90,
 			  opacity: 1,
-			  style: function(layer) {
+				style: function(layer) {
 				// you can use if statemt etc
 				return {
 				  color: 'green',
@@ -41,7 +41,7 @@ L.drawLocal.draw.toolbar.buttons.marker="Marker New Name"
 				});
 				return layer;
 			  },
-			})).addTo(map)
+			})).addTo(em_map)
 			
 			//негатив
 			const em_negativPointOptions = {
@@ -70,7 +70,7 @@ L.drawLocal.draw.toolbar.buttons.marker="Marker New Name"
 				return layer;
 			  },
 			}));
-			em_negativ.addTo(map);
+			em_negativ.addTo(em_map);
 			
 					//позитив	 
 			var drawControlPozitiv = new L.Control.Draw({ 
@@ -88,8 +88,7 @@ L.drawLocal.draw.toolbar.buttons.marker="Marker New Name"
 				},
 				/* position: 'bottomleft', */
 				});
-				/* map.addControl(drawControlPozitiv); */
-drawControlPozitiv.addTo(map);
+
 
 
 /*  			map.on('draw:created', function (e) {
@@ -115,192 +114,56 @@ drawControlPozitiv.addTo(map);
 				/* map.addControl(drawControlNegatv); */
 				
 				
-drawControlNegatv.addTo(map);
-
-/* 			    map.on('draw:created', function (e) {
-				var layer = e.layer;
-				em_negativ.addLayer(layer)
-				});
- */
-
-var activeMode = null;
 
 
-// Отслеживаем активацию инструментов
 
-map.on('draw:drawstart', function (e) {
+//// Кнопка для позитивного маркера
+L.easyButton({
+    states: [{
+        icon: 'fa-smile',
+        onClick: function(btn, em_map) {
+            drawControlPozitiv = new L.Draw.Marker(em_map);  // Создаем инструмент для маркеров
+            drawControlPozitiv.enable();  // Включаем инструмент
+            activeMode = 'pozitiv';  // Устанавливаем активный режим
+            console.log('Режим: позитивный маркер');
+        },
+        title: 'Добавить позитивный маркер'
+    }]
+}).addTo(em_map).button.classList.add('positive');  // Добавляем класс positive
 
-    console.log('draw:drawstart событие сработало');
-
-    console.log('e (всё событие):', e);
- // Печатаем полное событие для отладки
-
-    console.log('Тип инструмента:', e.layerType);
-
-
-    // Проверяем, какой инструмент активен
-
-    if (e.layerType === 'marker') {
-
-        console.log('Это инструмент для маркеров');
-
-
-        // Проверяем, что именно активировано
-
-        if (e.sourceTarget === drawControlPozitiv) {
-
-            activeMode = 'pozitiv';
-
-            console.log('Активирован инструмент для добавления позитивного маркера');
-
-        } else if (e.sourceTarget === drawControlNegatv) {
-
-            activeMode = 'negativ';
-
-            console.log('Активирован инструмент для добавления негативного маркера');
-
-        } else {
-            console.log('Активный инструмент не определён');
-
-        }
-
-    }
-
-});
+// Кнопка для негативного маркера
+L.easyButton({
+    states: [{
+        icon: 'fa-frown',
+        onClick: function(btn, em_map) {
+            drawControlNegativ = new L.Draw.Marker(em_map);  // Создаем инструмент для маркеров
+            drawControlNegativ.enable();  // Включаем инструмент
+            activeMode = 'negativ';  // Устанавливаем активный режим
+            console.log('Режим: негативный маркер');
+        },
+        title: 'Добавить негативный маркер'
+    }]
+}).addTo(em_map).button.classList.add('negative');  // Добавляем класс negative
 
 
-// Слушаем событие завершения рисования маркера
 
-map.on('draw:created', function (e) {
 
+em_map.on('draw:created', function (e) {
     console.log('draw:created событие сработало');
-
-    console.log('e (всё событие):', e);
- // Печатаем полное событие для отладки
-
     console.log('Тип слоя:', e.layerType);
 
-
-    var layer = e.layer;
-
-    console.log('Добавленный слой:', layer);
- // Печатаем информацию о слое
-
-
     if (e.layerType === 'marker') {
-
-        console.log('Активный режим:', activeMode);
-
-
+        console.log('Маркер создан');
         if (activeMode === 'pozitiv') {
-
-            em_pozitiv.addLayer(layer);
-
-            console.log('Маркер добавлен в позитивный слой');
-
+            em_pozitiv.addLayer(e.layer);  // Добавляем маркер в позитивный слой
+            console.log('Маркер добавлен на карту в позитивный слой');
         } else if (activeMode === 'negativ') {
-
-            em_negativ.addLayer(layer);
-
-            console.log('Маркер добавлен в негативный слой');
-
-        } else {
-
-            console.log('Не удалось определить, в какой слой добавлять маркер');
-
+            em_negativ.addLayer(e.layer);  // Добавляем маркер в негативный слой
+            console.log('Маркер добавлен на карту в негативный слой');
         }
-
-
-        // Добавляем слой на карту
-
-        map.addLayer(layer);
-
-        console.log('Маркер добавлен на карту');
-
-
-        // Сбрасываем активный режим
-
-        activeMode = null;
-
-        console.log('Режим сброшен после добавления маркера');
-
-    } else {
-
-        console.log('Добавленный объект не является маркером');
-
+        activeMode = null;  // Сбрасываем активный режим
     }
-
 });
-
-
-
-
-// Сбрасываем режим при закрытии панели инструментов
-
-map.on('draw:toolbarclosed', function () {
-
-    activeMode = null;
-
-    console.log('Инструмент деактивирован');
-
-});
-
-
-// Слушаем событие завершения рисования маркера
-
-map.on('draw:created', function (e) {
-
-    var layer = e.layer;
-
-    console.log('draw:created событие сработало');
-
-    console.log('Тип слоя:', e.layerType);
-
-
-    // Проверяем, какой режим был активен
-
-    if (e.layerType === 'marker') {
-
-        console.log('Активный режим:', activeMode);
-
-
-        if (activeMode === 'pozitiv') {
-
-            em_pozitiv.addLayer(layer);
-
-            console.log('Маркер добавлен в позитивный слой');
-
-        } else if (activeMode === 'negativ') {
-
-            em_negativ.addLayer(layer);
-
-            console.log('Маркер добавлен в негативный слой');
-
-        } else {
-
-            console.log('Не удалось определить, в какой слой добавлять маркер');
-
-        }
-
-
-        // Добавляем слой на карту
-
-        map.addLayer(layer);
-
-        console.log('Маркер добавлен на карту');
-
-    } else {
-
-        console.log('Добавленный объект не является маркером');
-
-    }
-
-});
-
-
-
-
-
 
 
 
@@ -308,7 +171,6 @@ map.on('draw:created', function (e) {
 			L.easyButton('fa-save', function () {
 				em_pozitiv.save();
 				em_negativ.save();
-			}, 'Save changes').addTo(map);
+			}, 'Save changes').addTo(em_map);
 				
-			// Изменение цвета иконок маркеров
-			document.querySelector('.leaflet-draw-toolbar a.leaflet-draw-draw-marker').classList.add('leaflet-draw-draw-marker-negativ');
+			
